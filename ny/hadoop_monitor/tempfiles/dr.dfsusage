@@ -1,0 +1,11 @@
+Configured Capacity: 140093174759424 (127.41 TB)
+Present Capacity: 137577279086592 (125.13 TB)
+DFS Remaining: 84964368703488 (77.27 TB)
+DFS Used: 52612910383104 (47.85 TB)
+DFS Used%: 38.24%
+Under replicated blocks: 0
+Blocks with corrupt replicas: 0
+Missing blocks: 0
+Missing blocks (with replication factor 1): 0
+
+-------------------------------------------------

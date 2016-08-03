@@ -1,0 +1,4 @@
+Present Capacity , 333.03 TB
+DFS Remaining , 194.13 TB
+DFS Used , 138.90 TB
+DFS Used%, 41.71%

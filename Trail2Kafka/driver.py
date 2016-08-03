@@ -85,6 +85,21 @@ def run_bucket_mode(parameters):
     __initiate_threads(parameters)
 
 
+def _cleanup():
+    """This function will clean up the resources for Application Initialization.
+    :return:
+    """
+    #1. clean FileBucket
+    #2. other settings will follow.
+
+    # clean up the FileBucket File for the normal run.
+    fh = open("./meta/FileBucket", "w")
+    fh.close()
+
+    
+
+
+
 def app_driver(argv):
     """
     Main Function to drive the application.
@@ -113,6 +128,7 @@ def app_driver(argv):
         if execution_mode == "normal":
             print "Executing Application in NORMAL Mode"
             parameters = ds.Parameters('normal', source_file_handle, 0, None, ds.get_terminate_signal, config_dict)
+            _cleanup()
             run_normal_mode(parameters)
         elif execution_mode == "recovery":
             # This is the place to handle the cmd line argument. Take the initial pointer from the system.
