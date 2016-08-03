@@ -153,6 +153,7 @@ class NonPollableConfiguration(ConfigurationBase):
         self._config_dict["FILE_NAME"] = self._parser.get('Application', 'FILE_NAME') + _date_format() + ".csv"
         self._config_dict["FILE_PATH"] = self._parser.get('Application', 'FILE_PATH')
         self._config_dict["MASTER_QUEUE_SIZE"] = self._parser.get('Application', 'MASTER_QUEUE_SIZE')
+        self._config_dict["FAILED_BUCKET_QUEUE_SIZE"] = self._parser.get('Application', 'FAILED_BUCKET_QUEUE_SIZE')
         self._config_dict["LOG_ROOT"] = self._parser.get('Log', 'LOG_ROOT') + '/'
         self._config_dict["LOG_DIRNAME"] = self._parser.get('Log', 'LOG_DIRNAME')
         self._config_dict["LOG_FILENAME"] = self._parser.get('Log', 'LOG_FILENAME')

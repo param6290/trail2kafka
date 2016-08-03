@@ -16,6 +16,7 @@ __all__ = ['initialize_queue']
 # This Queue is responsible to tie up the producer/consumer model.
 # The size of this Queue is fixed at startup of the application.
 __MASTER_QUEUE = ''
+__FAILED_BUCKET_QUEUE = ''
 __TERMINATE_SIGNAL = ''
 
 __ERROR_INDICATOR = False
@@ -48,6 +49,15 @@ def initialize_queue(master_queue_size):
     __MASTER_QUEUE = Queue.Queue(master_queue_size)
 
 
+def initialize_failed_bucket_queue(failed_bucket_queue_size):
+    """Initialize failed bucket queue. This queue will contain the buckets of failed records.
+    :param failed_bucket_queue_size:
+    :return:
+    """
+    global __FAILED_BUCKET_QUEUE
+    __FAILED_BUCKET_QUEUE = Queue.Queue(failed_bucket_queue_size)
+
+
 def initialize_terminate_signal():
     """Initialize the Terminate Signal, which will stop the threads when triggered.
 
@@ -75,11 +85,27 @@ def get_master_queue_size():
     return __MASTER_QUEUE.qsize()
 
 
+def get_failed_bucket_queue_size():
+    """
+
+    :return:
+    """
+    return __FAILED_BUCKET_QUEUE.qsize()
+
+
 def get_master_queue():
     """Get the pointer to the master queue.
     :return: __MASTER_QUEUE
     """
     return __MASTER_QUEUE
+
+
+def get_failed_bucket_queue():
+    """Get the pointer to the failed bucket queue.
+
+    :return:
+    """
+    return __FAILED_BUCKET_QUEUE
 
 
 class Parameters(object):
@@ -103,3 +129,4 @@ class Parameters(object):
         self.final_pointer = final_pointer
         self.terminate_signal = terminate_signal
         self.configuration_obj = configuration_obj
+

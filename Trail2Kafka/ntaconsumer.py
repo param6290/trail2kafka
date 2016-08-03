@@ -25,6 +25,8 @@ def fine_callback(*args):
         fh = open('./meta/FileBucket', 'at')
         failed_bucket = str(__FIRST_FAILED_BYTE_MARKER) + '|' + str(__FIRST_SUCCEEDED_BYTE_MARKER) + "\n"
         fh.write(failed_bucket)
+        # Put the failure,success pointer into the failed bucket queue.
+        ds.get_failed_bucket_queue().put(str(__FIRST_FAILED_BYTE_MARKER), str(__FIRST_SUCCEEDED_BYTE_MARKER))
 
 
 def err_callback(*args):

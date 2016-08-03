@@ -12,6 +12,7 @@ import confighelper as ch
 import skeleton as ds
 import ntaproducer
 import ntaconsumer
+import monitor
 
 from recovery import recoverytool as rt
 
@@ -20,6 +21,7 @@ from recovery import recoverytool as rt
 def __initiate_threads(parameters):
     producer_thread = threading.Thread(name='PRODUCER', target=ntaproducer.worker, args=(parameters,))
     consumer_thread = threading.Thread(name='CONSUMER', target=ntaconsumer.worker, args=(parameters,))
+    app_monitor_thread = threading.Thread(name='App MONITOR THREAD', target=monitor.worker, args=(parameters,))
     # clock_thread = threading.Thread(name='NTA-CLOCK',target=ntaclock.clock_func,args=(TERMINATE_SIGNAL,))
 
     # Demonize the threads.
@@ -96,6 +98,7 @@ def app_driver(argv):
 
     source_file_handle = __get_file_handle(config_dict)
     ds.initialize_queue(config_dict.get('MASTER_QUEUE_SIZE'))
+    ds.initialize_failed_bucket_queue(config_dict.get('FAILED_BUCKET_QUEUE_SIZE'))
     ds.initialize_terminate_signal()
 
     # This block of code will create a parameter object for the application.
