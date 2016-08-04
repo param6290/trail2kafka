@@ -93,10 +93,13 @@ def _cleanup():
     #2. other settings will follow.
 
     # clean up the FileBucket File for the normal run.
-    fh = open("./meta/FileBucket", "w")
-    fh.close()
+    fh_filebucket = open("./meta/FileBucket", "w")
+    fh_filebucket.close()
 
-    
+    # clean up the recovery_point file.
+    fh_recoverypoint = open("./meta/recovery_point", "w")
+    fh_recoverypoint.close()
+
 
 
 

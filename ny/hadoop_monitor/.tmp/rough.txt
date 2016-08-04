@@ -1,8 +1,0 @@
-Present Capacity : 333.03 TB
-DFS Remaining : 194.13 TB
-DFS Used : 138.90 TB
-DFS Used%: 41.71%
-Under replicated blocks: 7184
-Blocks with corrupt replicas: 0
-Missing blocks: 7184
-Missing blocks (with replication factor 1: 17362
