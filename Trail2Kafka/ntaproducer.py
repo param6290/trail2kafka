@@ -5,8 +5,13 @@ __author__ = 'ravi.shekhar'
 """
 
 import time
+from datetime import datetime
 
 import skeleton as ds
+
+
+def _attach_timestamp():
+    return datetime.now().strftime("%H:%M:%S.%f")
 
 
 def follow_from(source_file_handle, fp_position):
@@ -21,13 +26,17 @@ def follow_from(source_file_handle, fp_position):
 
 
 def __normal_extraction_logic(parameters):
+    # Initialize Counter
+    record_serial_number = ds.Counter(0)
     generator_handle = follow_from(parameters.source_file_handle, parameters.initial_pointer)
     for curr_position, line in generator_handle:
-        my_line = curr_position + ',' + line
+        record_serial_number.increment()
+        my_line = curr_position + ',' + str(record_serial_number.get_counter()) + ',' + _attach_timestamp() + ',' + line
         my_line = my_line.strip()
         try:
             ds.get_master_queue().put(my_line, True)
         except:
+            # This has to be logged. what exception could occur here.
             pass
 
 
@@ -39,6 +48,7 @@ def __recovery_extraction_logic(parameters):
         try:
             ds.get_master_queue().put(my_line, True)
         except:
+            # This has to be logged. what exception could occur here.
             print "Exception Occurred | While Pushing Into The Queue"
             pass
 

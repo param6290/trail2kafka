@@ -43,12 +43,13 @@ def worker(parameters):
     d = parameters.configuration_obj
     string_of_servers = d.get('KP_bootstrap_servers')
     topic = d.get('KP_topic').strip()
+    partitioN = d.get('KP_partition')
     producer = KafkaProducer(bootstrap_servers=map(lambda e: e.strip(), string_of_servers.split(',')), client_id=d.get("KP_client_id"), acks=d.get("KP_acks"), batch_size=d.get("KP_batch_size"), buffer_memory=d.get("KP_buffer_memory"))
     while True:
         consumer_counter += 1
         try:
             record_line = ds.get_master_queue().get(True, 1)
-            future = producer.send(topic, value=record_line, partition=0)
+            future = producer.send(topic, value=record_line, partition=partitioN)
             # record_metadata = future.get(timeout=10)
             byte_marker = record_line[:record_line.index(',')]
             future.add_callback(fine_callback, byte_marker)
@@ -59,5 +60,5 @@ def worker(parameters):
             # log this exception
             pass
 
-        if consumer_counter % 500000 == 0:
+        if consumer_counter % 50000 == 0:
             print str(datetime.today()) + " | " + str(consumer_counter)

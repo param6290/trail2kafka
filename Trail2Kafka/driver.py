@@ -14,6 +14,7 @@ import ntaproducer
 import ntaconsumer
 import monitor
 
+from globalvar import PROJECT_ROOT
 from recovery import recoverytool as rt
 
 
@@ -93,14 +94,19 @@ def _cleanup():
     #2. other settings will follow.
 
     # clean up the FileBucket File for the normal run.
-    fh_filebucket = open("./meta/FileBucket", "w")
-    fh_filebucket.close()
-
+    try:
+        fh_filebucket = open(PROJECT_ROOT + "meta/FileBucket", "w")
+        fh_filebucket.close()
+    except IOError:
+        print "Exception Occurred while bucket file cleanup"
+        pass
     # clean up the recovery_point file.
-    fh_recoverypoint = open("./meta/recovery_point", "w")
-    fh_recoverypoint.close()
-
-
+    try:
+        fh_recoverypoint = open(PROJECT_ROOT + "meta/recovery_point", "w")
+        fh_recoverypoint.close()
+    except IOError:
+        print "Exception Occurred while recovery point cleanup"
+        pass
 
 
 def app_driver(argv):

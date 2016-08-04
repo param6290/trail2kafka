@@ -130,3 +130,26 @@ class Parameters(object):
         self.terminate_signal = terminate_signal
         self.configuration_obj = configuration_obj
 
+
+class Counter(object):
+    """This class is the representation of the counter.
+
+    """
+
+    def __init__(self, initial_value):
+        self.counter = initial_value
+
+    # Do I need to make this operation thead safe ?? Yes I guess, its necessary.
+    def increment(self):
+        self.counter += 1
+
+    # Do I need to make this operation thead safe ?? Yes I guess, its necessary.
+    def decrement(self):
+        self.counter -= 1
+
+    def get_counter(self):
+        return self.counter
+
+    def set_counter(self, value):
+        self.counter = value
+
