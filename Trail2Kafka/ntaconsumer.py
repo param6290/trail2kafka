@@ -9,33 +9,36 @@ from kafka import KafkaProducer
 from datetime import datetime
 import time
 
+from globalvar import PROJECT_ROOT
 import skeleton as ds
 
-__FIRST_SUCCEEDED_BYTE_MARKER = 0
-__FIRST_FAILED_BYTE_MARKER = 0
+_FIRST_SUCCEEDED_TUPLE = ''
+_FIRST_FAILED_TUPLE = ''
+
+bucket = ds.Bucket()
 
 
 def fine_callback(*args):
-    global __FIRST_SUCCEEDED_BYTE_MARKER
-    global __FIRST_FAILED_BYTE_MARKER
+    global _FIRST_FAILED_TUPLE
+    global _FIRST_SUCCEEDED_TUPLE
     if ds.get_error_indicator():
-        ds.set_error_indicator(False)  # reset the error indicator, as evething seems fine now.
-        __FIRST_SUCCEEDED_BYTE_MARKER = args[0]
-        print "First Succeeded | " + __FIRST_SUCCEEDED_BYTE_MARKER
-        fh = open('./meta/FileBucket', 'at')
-        failed_bucket = str(__FIRST_FAILED_BYTE_MARKER) + '|' + str(__FIRST_SUCCEEDED_BYTE_MARKER) + "\n"
+        ds.set_error_indicator(False)  # reset the error indicator, as everything seems fine now.
+        print "First Succeeded | " + _FIRST_SUCCEEDED_TUPLE[0]
+        fh = open(PROJECT_ROOT + 'meta/FileBucket', 'at')
+        failed_bucket = str(_FIRST_FAILED_TUPLE[0]) + '|' + str(_FIRST_FAILED_TUPLE[1]) \
+                        + '|' + str(_FIRST_SUCCEEDED_TUPLE[0])+ str(_FIRST_SUCCEEDED_TUPLE[1]) + "\n"
+        print "Pushing the below Tuple in the Failure Queue"
+        ds.get_failed_bucket_queue().put(failed_bucket)
         fh.write(failed_bucket)
-        # Put the failure,success pointer into the failed bucket queue.
-        ds.get_failed_bucket_queue().put(str(__FIRST_FAILED_BYTE_MARKER), str(__FIRST_SUCCEEDED_BYTE_MARKER))
 
 
 def err_callback(*args):
-    global __FIRST_FAILED_BYTE_MARKER
+    global _FIRST_FAILED_TUPLE
     # check if the error switch is on, skip it, as the error has already been detected.
     if not ds.get_error_indicator():
         ds.set_error_indicator(True)
-        __FIRST_FAILED_BYTE_MARKER = args[0]
-        print "First Failed | " + __FIRST_FAILED_BYTE_MARKER
+        _FIRST_FAILED_TUPLE = args
+        print "First Failed | " + _FIRST_FAILED_TUPLE[0]
 
 
 def worker(parameters):
@@ -51,9 +54,14 @@ def worker(parameters):
             record_line = ds.get_master_queue().get(True, 1)
             future = producer.send(topic, value=record_line, partition=partitioN)
             # record_metadata = future.get(timeout=10)
-            byte_marker = record_line[:record_line.index(',')]
-            future.add_callback(fine_callback, byte_marker)
-            future.add_errback(err_callback, byte_marker)
+
+            # Find the first comma and get the byte pointer. Then find the second comma and get the serial number.
+            i1 = record_line.index(',')
+            byte_marker = record_line[:i1]
+            record_serial_number = record_line[i1+1:][:record_line[i1+1:].index(',')]
+
+            future.add_callback(fine_callback, byte_marker, record_serial_number)
+            future.add_errback(err_callback, byte_marker, record_serial_number)
 
         except:
             # Decide what to do if produce request failed...

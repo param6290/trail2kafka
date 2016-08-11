@@ -9,6 +9,8 @@ Attributes:
 import Queue
 import threading
 
+import utils
+
 from kafka.common import TopicPartition
 
 __all__ = ['initialize_queue']
@@ -153,3 +155,53 @@ class Counter(object):
     def set_counter(self, value):
         self.counter = value
 
+    def reset(self):
+        self.counter = 0
+
+
+class Bucket(object):
+    """This class represents any two pointer in the source file. The instance of this class can be used as failed bucket
+    For the failed bucket case, we need to follow the rule [first_failed, first_succeeded)
+
+    """
+
+    def __init__(self):
+        self.dummy = 0
+
+    def set_first_failed_pointer(self, first_failed_pointer, first_failed_record_serial_number):
+        self.first_failed = first_failed_pointer
+        self.first_failed_serial_number = first_failed_record_serial_number
+        self.first_failed_timestamp = utils.attach_timestamp()
+
+    def set_first_succeeded_pointer(self, first_succeeded_pointer, first_succeeded_record_serial_number):
+        self.first_succeeded = first_succeeded_pointer
+        self.first_succeeded_serial_number = first_succeeded_record_serial_number
+        self.first_succeeded_timestamp = utils.attach_timestamp()
+
+    def get_first_failed_pointer(self):
+        """
+        Get the first failed record of the bucket.
+        :return:
+        """
+        return self.first_failed
+
+    def get_first_succeeded_pointer(self):
+        """
+        Get the first successfull record off the bucket.
+        :return:
+        """
+        return self.first_succeeded
+
+    def get_bucket_size(self):
+        """
+        Get the size of the bucket, as in the number of records in this bucket.
+        :return:
+        """
+        return self.bucket_size
+
+    def get_bucket_created_time(self):
+        """
+        Get the time when this bucket was initialized.
+        :return:
+        """
+        return self.bucket_created_time

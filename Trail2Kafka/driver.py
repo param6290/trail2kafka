@@ -28,11 +28,13 @@ def __initiate_threads(parameters):
     # Demonize the threads.
     producer_thread.daemon = True
     consumer_thread.daemon = True
+    app_monitor_thread.daemon = True
     # ntaclock_thread.daemon = True
 
     # Start the threads
     producer_thread.start()
     consumer_thread.start()
+    app_monitor_thread.start()
 
     # Perform the Join.
     consumer_thread.join()
