@@ -17,16 +17,21 @@ _FIRST_FAILED_TUPLE = ''
 
 bucket = ds.Bucket()
 
+_FIRST_FAILED_TUPLE = 0
+_FIRST_SUCCEEDED_TUPLE = 0
+
 
 def fine_callback(*args):
     global _FIRST_FAILED_TUPLE
     global _FIRST_SUCCEEDED_TUPLE
     if ds.get_error_indicator():
+        print "Error Indicator Changed."
+        _FIRST_SUCCEEDED_TUPLE = args
         ds.set_error_indicator(False)  # reset the error indicator, as everything seems fine now.
         print "First Succeeded | " + _FIRST_SUCCEEDED_TUPLE[0]
         fh = open(PROJECT_ROOT + 'meta/FileBucket', 'at')
         failed_bucket = str(_FIRST_FAILED_TUPLE[0]) + '|' + str(_FIRST_FAILED_TUPLE[1]) \
-                        + '|' + str(_FIRST_SUCCEEDED_TUPLE[0])+ str(_FIRST_SUCCEEDED_TUPLE[1]) + "\n"
+                        + '|' + str(_FIRST_SUCCEEDED_TUPLE[0]) + '|'  + str(_FIRST_SUCCEEDED_TUPLE[1]) + "\n"
         print "Pushing the below Tuple in the Failure Queue"
         ds.get_failed_bucket_queue().put(failed_bucket)
         fh.write(failed_bucket)
