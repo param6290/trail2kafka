@@ -22,6 +22,7 @@ def fine_callback(*args):
         ds.set_error_indicator(False)  # reset the error indicator, as evething seems fine now.
         __FIRST_SUCCEEDED_BYTE_MARKER = args[0]
         print "First Succeeded | " + __FIRST_SUCCEEDED_BYTE_MARKER
+        ds.clogger.info("First Succeeded | " + __FIRST_SUCCEEDED_BYTE_MARKER)
         fh = open('./meta/FileBucket', 'at')
         failed_bucket = str(__FIRST_FAILED_BYTE_MARKER) + '|' + str(__FIRST_SUCCEEDED_BYTE_MARKER) + "\n"
         fh.write(failed_bucket)
@@ -34,9 +35,11 @@ def err_callback(*args):
         ds.set_error_indicator(True)
         __FIRST_FAILED_BYTE_MARKER = args[0]
         print "First Failed | " + __FIRST_FAILED_BYTE_MARKER
+        ds.clogger.info("First Failed | " + __FIRST_FAILED_BYTE_MARKER)
 
 
 def worker(parameters):
+    ds.clogger.info("Starting Consumer Thread")
     consumer_counter = 0
     d = parameters.configuration_obj
     string_of_servers = d.get('KP_bootstrap_servers')
@@ -55,7 +58,10 @@ def worker(parameters):
         except:
             # Decide what to do if produce request failed...
             # log this exception
+            ds.clogger.error("Exception Occurred")
             pass
 
         if consumer_counter % 500000 == 0:
             print str(datetime.today()) + " | " + str(consumer_counter)
+            ds.clogger.info(str(datetime.today()) + " | " + str(consumer_counter))
+    

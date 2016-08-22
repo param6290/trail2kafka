@@ -8,8 +8,57 @@ Attributes:
 
 import Queue
 import threading
+import logging
 
 from kafka.common import TopicPartition
+
+import confighelper as ch
+
+
+"""Dictionary calling
+"""
+non_pollable_configuration = ch.NonPollableConfiguration()
+non_pollable_configuration.parse_config()
+config_dict = non_pollable_configuration.get_conf_dict()
+
+
+"""Initializing log values for logging
+"""
+LOG_DIR = config_dict.get('LOG_DIRNAME')
+LOG_FILE = config_dict.get('LOG_FILENAME')
+LOG_LEVEL = config_dict.get('LOG_LEVEL')
+
+
+"""Setting up the log handler
+"""
+LEVELS = {
+    'debug': logging.DEBUG,
+    'info': logging.INFO,
+    'warning': logging.WARNING,
+    'error': logging.ERROR,
+    'critical': logging.CRITICAL, }
+
+
+logging.basicConfig(
+    format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S',
+    filename=LOG_DIR + LOG_FILE,
+    filemode='w',
+    level=LEVELS.get(LOG_LEVEL, logging.NOTSET))
+
+
+# Driver logger
+driverlogger = logging.getLogger("driver")
+
+# Producer logger
+plogger = logging.getLogger("ntaproducer")
+
+# Consumer logger
+clogger = logging.getLogger("ntaconsumer")
+
+# Recovery logger
+rlogger = logging.getLogger("recovery")
+
 
 __all__ = ['initialize_queue']
 
