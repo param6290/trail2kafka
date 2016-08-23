@@ -22,19 +22,19 @@ from recovery import recoverytool as rt
 def __initiate_threads(parameters):
     producer_thread = threading.Thread(name='PRODUCER', target=ntaproducer.worker, args=(parameters,))
     consumer_thread = threading.Thread(name='CONSUMER', target=ntaconsumer.worker, args=(parameters,))
-    app_monitor_thread = threading.Thread(name='App MONITOR THREAD', target=monitor.worker, args=(parameters,))
+    #app_monitor_thread = threading.Thread(name='App MONITOR THREAD', target=monitor.worker, args=(parameters,))
     # clock_thread = threading.Thread(name='NTA-CLOCK',target=ntaclock.clock_func,args=(TERMINATE_SIGNAL,))
 
     # Demonize the threads.
     producer_thread.daemon = True
     consumer_thread.daemon = True
-    app_monitor_thread.daemon = True
+    #app_monitor_thread.daemon = True
     # ntaclock_thread.daemon = True
 
     # Start the threads
     producer_thread.start()
     consumer_thread.start()
-    app_monitor_thread.start()
+    #app_monitor_thread.start()
 
     # Perform the Join.
     consumer_thread.join()
