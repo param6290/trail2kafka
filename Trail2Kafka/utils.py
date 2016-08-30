@@ -9,16 +9,25 @@ import time
 
 
 def attach_timestamp():
+    """ Returns the current timestamp
+    """
     return datetime.now().strftime("%H:%M:%S.%f")
 
 
-def indexOf_nth_occurrence(record_line, n, substring):
-    """ This function will give the nth occurrence of a substring in the record_line. A typical use can be to find out,
-    second occurance of comma in a record line.
-
+def indexSpecial(record_line, n, s):
+    """
+    Returns the index of the nth occurrence of the s substring in the string record_line.
     :param record_line:
     :param n:
-    :param substring:
+    :param s:
     :return:
     """
+    ind = 0
+    ind1 = 0
+    for i in range(0, n):
+            ind = record_line.index(s)
+            ind_plus_1 = ind + 1
+            ind1 += ind_plus_1
+            record_line = record_line[ind_plus_1:]
+    return ind1-1
 

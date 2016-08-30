@@ -41,9 +41,11 @@ def __normal_extraction_logic(parameters):
 
 
 def __recovery_extraction_logic(parameters):
+    record_serial_number = ds.Counter(0)
     generator_handle = follow_from(parameters.source_file_handle, parameters.initial_pointer)
     for curr_position, line in generator_handle:
-        my_line = curr_position + ',' + line
+        record_serial_number.increment()
+        my_line = curr_position + ',' + str(record_serial_number.get_counter()) + ',' + _attach_timestamp() + ',' + line
         my_line = my_line.strip()
         try:
             ds.get_master_queue().put(my_line, True)

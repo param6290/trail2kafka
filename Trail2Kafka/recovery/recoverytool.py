@@ -57,14 +57,15 @@ class _CBL(ConsumerRebalanceListener):
 
 
 def get_last_offset(recovery_topic, recovery_partition):
-    """
+    """This function should fetch the latest byte_pointer and record_serial_number from kafka.
     :return: Last successfull offset.
     """
     print "Retrieving the last offset"
     print PROJECT_ROOT
     META_LOCATION_rp = PROJECT_ROOT + "/meta/recovery_point"
     import os
-    CMD = r'ssh ntart@192.168.156.56 /usr/bin/kafka-run-class kafka.tools.GetOffsetShell --broker-list 192.168.156.55:9092 --topic '+recovery_topic+ ' --partition ' + str(recovery_partition) + " --time -1 | awk -F : '{print $3}' > " + META_LOCATION_rpstem(CMD)
+    CMD = r'ssh ntart@192.168.156.56 /usr/bin/kafka-run-class kafka.tools.GetOffsetShell --broker-list 192.168.156.55:9092 --topic '+recovery_topic+ ' --partition ' + str(recovery_partition) + " --time -1 | awk -F : '{print $3}' > " + META_LOCATION_rp
+    os.system(CMD)
     fh = open(META_LOCATION_rp, 'rt')
     pointer = fh.readline()
     fh.close()

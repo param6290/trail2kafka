@@ -57,6 +57,7 @@ def worker(parameters):
         consumer_counter += 1
         try:
             record_line = ds.get_master_queue().get(True, 1)
+            # future object pointer here.
             future = producer.send(topic, value=record_line, partition=partitioN)
             # record_metadata = future.get(timeout=10)
 
@@ -64,6 +65,8 @@ def worker(parameters):
             i1 = record_line.index(',')
             byte_marker = record_line[:i1]
             record_serial_number = record_line[i1+1:][:record_line[i1+1:].index(',')]
+
+
 
             future.add_callback(fine_callback, byte_marker, record_serial_number)
             future.add_errback(err_callback, byte_marker, record_serial_number)
