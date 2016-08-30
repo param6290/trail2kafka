@@ -6,7 +6,6 @@ __author__ = 'ravi.shekhar'
 
 import time
 from datetime import datetime
-
 import skeleton as ds
 
 
@@ -37,6 +36,7 @@ def __normal_extraction_logic(parameters):
             ds.get_master_queue().put(my_line, True)
         except:
             # This has to be logged. what exception could occur here.
+            ds.plogger.error("Exception Occurred | While Pushing Into The Queue")
             pass
 
 
@@ -50,6 +50,7 @@ def __recovery_extraction_logic(parameters):
         except:
             # This has to be logged. what exception could occur here.
             print "Exception Occurred | While Pushing Into The Queue"
+            ds.plogger.error("Exception Occurred | While Pushing Into The Queue")
             pass
 
 
@@ -62,6 +63,7 @@ def __bucket_extraction_logic(parameters):
         if parameters.final_pointer <= int(curr_position):
             # Signal other threads that the bucket has completed.
             print "Bucket Fetched"
+            ds.plogger.info("Bucket Fetched")
             break
         my_line = curr_position + ',' + line
         my_line = my_line.strip()
@@ -70,10 +72,12 @@ def __bucket_extraction_logic(parameters):
             ds.get_master_queue().put(my_line, True)
         except:
             print "Exception Occurred"
+            ds.plogger.error("Exception Occurred While Pushing Into The Queue")
 
 
 def worker(parameters):
     # log information here.
+    ds.plogger.info("Starting Producer Thread")
 
     #  Determine Mode and take appropriate action.
 

@@ -25,14 +25,18 @@ def fine_callback(*args):
     global _FIRST_FAILED_TUPLE
     global _FIRST_SUCCEEDED_TUPLE
     if ds.get_error_indicator():
+
         print "Error Indicator Changed."
+        ds.clogger.info("Error Indicator Changed.")
         _FIRST_SUCCEEDED_TUPLE = args
         ds.set_error_indicator(False)  # reset the error indicator, as everything seems fine now.
         print "First Succeeded | " + _FIRST_SUCCEEDED_TUPLE[0]
+        ds.clogger.info("First Succeeded | " + _FIRST_SUCCEEDED_TUPLE[0])
         fh = open(PROJECT_ROOT + 'meta/FileBucket', 'at')
         failed_bucket = str(_FIRST_FAILED_TUPLE[0]) + '|' + str(_FIRST_FAILED_TUPLE[1]) \
                         + '|' + str(_FIRST_SUCCEEDED_TUPLE[0]) + '|'  + str(_FIRST_SUCCEEDED_TUPLE[1]) + "\n"
         print "Pushing the below Tuple in the Failure Queue"
+        ds.clogger.info("Pushing the below Tuple in the Failure Queue")
         ds.get_failed_bucket_queue().put(failed_bucket)
         fh.write(failed_bucket)
 
@@ -44,9 +48,11 @@ def err_callback(*args):
         ds.set_error_indicator(True)
         _FIRST_FAILED_TUPLE = args
         print "First Failed | " + _FIRST_FAILED_TUPLE[0]
+        ds.clogger.info("First Failed | " + _FIRST_FAILED_TUPLE[0])
 
 
 def worker(parameters):
+    ds.clogger.info("Starting Consumer Thread")
     consumer_counter = 0
     d = parameters.configuration_obj
     string_of_servers = d.get('KP_bootstrap_servers')
@@ -71,7 +77,9 @@ def worker(parameters):
         except:
             # Decide what to do if produce request failed...
             # log this exception
+            ds.clogger.error("Exception Occurred")
             pass
 
         if consumer_counter % 50000 == 0:
             print str(datetime.today()) + " | " + str(consumer_counter)
+            ds.clogger.info(str(datetime.today()) + " | " + str(consumer_counter))

@@ -17,7 +17,6 @@ import monitor
 from globalvar import PROJECT_ROOT
 from recovery import recoverytool as rt
 
-
 # Internal Function
 def __initiate_threads(parameters):
     producer_thread = threading.Thread(name='PRODUCER', target=ntaproducer.worker, args=(parameters,))
@@ -52,6 +51,7 @@ def __get_file_handle(config_dict):
     except IOError as e:
         # log the error here.
         print "Error Occurred While opening the file : {}".format(str(e))
+        ds.driverlogger.error("Error Occurred While opening the file : {}".format(str(e)))
 
     # what should be the correct way of writing this function ??
     return _source_file_handle
@@ -92,8 +92,8 @@ def _cleanup():
     """This function will clean up the resources for Application Initialization.
     :return:
     """
-    #1. clean FileBucket
-    #2. other settings will follow.
+    # 1. clean FileBucket
+    # 2. other settings will follow.
 
     # clean up the FileBucket File for the normal run.
     try:
@@ -111,16 +111,29 @@ def _cleanup():
         pass
 
 
+def initialize():
+    ds.driverlogger.info("Initializing the components..")
+
+    non_pollable_configuration = ch.NonPollableConfiguration()
+    non_pollable_configuration.parse_config()
+    config_dict = non_pollable_configuration.get_conf_dict()
+
+    ds.driverlogger.info("Initialization complete..")
+    return config_dict
+
+
 def app_driver(argv):
     """
     Main Function to drive the application.
     :return:
     """
+    config_dict = initialize()
 
-    # This block of code should go in initialization function.
-    non_pollable_configuration = ch.NonPollableConfiguration()
-    non_pollable_configuration.parse_config()
-    config_dict = non_pollable_configuration.get_conf_dict()
+    # Continue if config_dict is fine that is not None.
+
+    if not config_dict:
+        ds.driverlogger.error("Error occurred while initializing dictionary.. Program Exiting")
+        sys.exit(1)
 
     source_file_handle = __get_file_handle(config_dict)
     ds.initialize_queue(config_dict.get('MASTER_QUEUE_SIZE'))
@@ -134,16 +147,19 @@ def app_driver(argv):
     if len(sys.argv) == 1:
         # log this.
         print "Error!! Please supply the mode <normal/recovery/bucket>"
+        ds.driverlogger.error("Error!! Please supply the mode <normal/recovery/bucket>")
     else:
         execution_mode = sys.argv[1]
         if execution_mode == "normal":
             print "Executing Application in NORMAL Mode"
+            ds.driverlogger.info("Executing Application in NORMAL Mode")    
             parameters = ds.Parameters('normal', source_file_handle, 0, None, ds.get_terminate_signal, config_dict)
             _cleanup()
             run_normal_mode(parameters)
         elif execution_mode == "recovery":
             # This is the place to handle the cmd line argument. Take the initial pointer from the system.
             print "Running program in recovery mode"
+            ds.driverlogger.info("Running Application in RECOVERY Mode")
             # extract recovery params.
             recovery_topic = config_dict.get('KP_topic')
             recovery_partition = config_dict.get('KP_partition')
@@ -154,10 +170,12 @@ def app_driver(argv):
             recovery_param = rt.RecoveryParams(recovery_topic, recovery_partition, last_commit_offset)
             last_successful_byte_marker = int(rt.recover(recovery_param))
             print "Last successful Byte Marker : " + str(last_successful_byte_marker)
+            ds.driverlogger.info("Last successful Byte Marker : " + str(last_successful_byte_marker))
 
             parameters = ds.Parameters('recovery', source_file_handle, last_successful_byte_marker, None, ds.get_terminate_signal, config_dict)
             run_recovery_mode(parameters)
         elif "bucket" == execution_mode:
+            ds.driverlogger.info("Running Application in BUCKET Mode")
             parameters = ds.Parameters('bucket', source_file_handle, 0, None, ds.get_terminate_signal, config_dict)
             # binding new attributes.
             parameters.initial_pointer = int(sys.argv[2])
