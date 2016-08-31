@@ -7,6 +7,7 @@ from kafka.common import TopicPartition
 from kafka.consumer.subscription_state import ConsumerRebalanceListener
 
 from ..globalvar import PROJECT_ROOT
+from ..utils import indexSpecial
 
 consumer = KafkaConsumer(group_id='nta-group',bootstrap_servers=['192.168.156.55:9092','192.168.156.56:9092',
                                                       '192.168.156.57:9092','192.168.156.58:9092',
@@ -74,7 +75,7 @@ def get_last_offset(recovery_topic, recovery_partition):
 
 
 def recover(recovery_param):
-    """
+    """ This function will return the byte pointer and serial number of the last successfull record from kafka and
 
 
     :rtype : last_successful_byte_marker
@@ -94,7 +95,9 @@ def recover(recovery_param):
             consumer_record = result_dict[tp][-1]
             #consumer_record = result_dict[recovery_param.get_topic_partition()][-1]
             last_record = consumer_record[4]
-            return last_record[:last_record.index(',')]
+            second_comma = int(indexSpecial(last_record,2,','))
+            return last_record[:second_comma]
+            #return last_record[:last_record.index(',')]
         else:
             pass
 
