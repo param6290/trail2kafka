@@ -171,11 +171,9 @@ def app_driver(argv):
             recovery_param = rt.RecoveryParams(recovery_topic, recovery_partition, last_commit_offset)
             last_successful_byte_marker, last_successful_serial_number = tuple([ int(item) for item in rt.recover(recovery_param).split(',')])
             print "Last successful Byte Marker : " + str(last_successful_byte_marker)
-<<<<<<< HEAD
             ds.driverlogger.info("Last successful Byte Marker : " + str(last_successful_byte_marker))
-=======
             print "Last successful Serial Number : " + str(last_successful_serial_number)
->>>>>>> 34fb16b532ac5c58ebe598407f211c4e181d5264
+            ds.driverlogger.info("Last successful Serial Number : " + str(last_successful_serial_number))
 
             parameters = ds.Parameters('recovery', source_file_handle, last_successful_byte_marker, None, ds.get_terminate_signal, config_dict)
             parameters.last_successful_serial_number = ds.Counter(int(last_successful_serial_number))
