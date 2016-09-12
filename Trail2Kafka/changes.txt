@@ -12,4 +12,3 @@ CHANGES: IPS:
 
 FILE: /DWH_FILE/work/Trail2Kafka/Trail2Kafka/recovery/recoverytool.py
 CHANGES: IPS: SAME AS ABOVE
-
